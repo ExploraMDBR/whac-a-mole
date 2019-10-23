@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Gioco dei riflessi</title>
+	<style type="text/css">
+		html, body, div, span, applet, object, iframe,
+		h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+		a, abbr, acronym, address, big, cite, code,
+		del, dfn, em, img, ins, kbd, q, s, samp,
+		small, strike, strong, sub, sup, tt, var,
+		b, u, i, center,
+		dl, dt, dd, ol, ul, li,
+		fieldset, form, label, legend,
+		table, caption, tbody, tfoot, thead, tr, th, td,
+		article, aside, canvas, details, embed, 
+		figure, figcaption, footer, header, hgroup, 
+		menu, nav, output, ruby, section, summary,
+		time, mark, audio, video {
+			margin: 0;
+			padding: 0;
+			border: 0;
+			font-size: 100%;
+			font: inherit;
+			vertical-align: baseline;
+			overflow: hidden
+		}
+
+		img {
+			width: 100%
+		}
+
+		.hidden {
+			display: none
+		}
+
+	</style>
+	<script type="text/javascript" src="jquery-3.4.1.js"></script>
+</head>
+<body>
+	<img src="01.jpg">
+	<img class="hidden" src="02.jpg">
+	<img class="hidden" src="03.gif">
+	<img class="hidden" src="04.jpg">
+	<img class="hidden" src="05.jpg">
+	<script type="text/javascript">
+		$( document ).ready(function() {
+		    console.log( "ready!" );
+
+		    var jqxhr = $.ajax( "status" )
+		      .done(function() {
+		        console.log( "success" );
+		      })
+		      .fail(function() {
+		        console.log( "error" );
+		      })
+		      .always(function() {
+		        console.log( "complete" );
+		      });
+		});
+	</script>
+</body>
+</html>
