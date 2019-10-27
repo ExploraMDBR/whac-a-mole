@@ -15,7 +15,7 @@ read -n1 -p "About to perform mysql conf. User supervision required. press a key
 sudo mysql_secure_installation
 
 
-#create user for wp
+#create DB
 echo "creating SQL user"
 SQL_PASS=$(randpass)
 SQL_USER=admin
@@ -27,3 +27,7 @@ sudo mysql -e "CREATE DATABASE pari"
 sudo mysql pari < paolo/pari.sql
 
 echo "Database [pari] created, password = $SQL_PASS"
+
+#init server as deamon
+sed -e "s:%WORK_DIR%:$(pwd):g" pari_server.service | sudo tee /etc/systemd/system/pari_server.service  
+sudo systemctl enable pari_server.service

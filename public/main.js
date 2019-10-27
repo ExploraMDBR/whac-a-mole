@@ -47,19 +47,19 @@ function show_screen(com){
 
 $( document ).ready(function() {
     console.log( "ready!" );
-
+    $("#transition").fadeOut(500);
+    $("#over p").text("");
+    
     const WS_PORT = 8001
     const url = "ws://" + window.location.hostname+":"+ WS_PORT+"/"
 
     let websocket = new WebSocket(url);
+    document.websocket = websocket
     websocket.binaryType = "arraybuffer";
     websocket.onopen = function(evt) { onOpen(evt) };
     websocket.onclose = function(evt) { onClose(evt) };
     websocket.onmessage = function(evt) { onMessage(evt) };
     websocket.onerror = function(evt) { onError(evt) };
-
-
-
 
 
     function onOpen(evt){

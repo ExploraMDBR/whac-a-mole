@@ -1,0 +1,12 @@
+[Service]
+WorkingDirectory=%WORK_DIR%
+ExecStart=%WORK_DIR%/main.py
+Restart=always
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=pari_server
+User=root
+Group=root
+[Install]
+WantedBy=multi-user.target
+

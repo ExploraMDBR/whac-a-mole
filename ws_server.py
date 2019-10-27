@@ -2,6 +2,19 @@ from SimpleWebSocketServer import SimpleWebSocketServer, WebSocket
 import json
 from datetime import datetime
 import threading
+import re
+from sys import stdout
+__TEMP_condition = threading.Condition()
+__TEMP_user_creation = 0
+
+def create_user(code):
+	global __TEMP_condition
+	global __TEMP_user_creation
+
+	__TEMP_user_creation = code
+	with __TEMP_condition:
+		__TEMP_condition.notify_all()
+
 
 WS_PORT = 8001
 clients = []
@@ -13,13 +26,23 @@ def get_comm_json(msg):
 		"count": 0
 		})
 
-def dump_to_console(msg):
-	print("[WS] {} {}".format(datetime.now(), msg))
+def dump_to_console(msg, xtra=None):
+	print("[WS] {} {}".format(msg, xtra))
+	stdout.flush()
 
 class Pari_Websocket_Handler(WebSocket):
 
 
 	def handleMessage(self):
+		try:
+			is_new_user = re.match("NEW_USER ([0-9]{4})", self.data)
+			if is_new_user:
+				create_user(is_new_user.group(1))
+				
+
+		except Exception as e:
+			dump_to_console("Problem creating new user from WS:", e)
+
 		dump_to_console("incoming MSG: {}".format(self.data))
 
 	def handleConnected(self):
