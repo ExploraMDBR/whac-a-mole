@@ -34,96 +34,46 @@
 			display: none
 		}
 
+		#over{
+			position: absolute;
+			top: 0;
+			height: 100%;
+			width: 100%;
+			display: flex;
+		    align-items: center;
+		    z-index: 2;
+		}
+
+		#over p{
+			width: 100%;
+			text-align: center;
+			font-size: 100px;
+			font-family: sans-serif;
+		}
+
+		#transition {
+			width: 100%;
+			height: 100%;
+			z-index: 3;
+			background-color: green;
+			position: absolute;
+		}
+
 	</style>
 	<script type="text/javascript" src="jquery-3.4.1.js"></script>
 </head>
 <body>
-	<img src="01.jpg">
-	<img class="hidden" src="02.jpg">
-	<img class="hidden" src="03.gif">
-	<img class="hidden" src="04.jpg">
-	<img class="hidden" src="05.jpg">
-	<script type="text/javascript">
-		$( document ).ready(function() {
-		    console.log( "ready!" );
+	<div id="transition"></div>
+	<div id="over">
+		<p>SOME TEXT</p>
+	</div>
+	<img id="screen_IDLE" class="backplate" src="01.jpg">
+	<img id="screen_INSTRUCTIONS" class="backplate hidden" src="02.jpg">
+	<img id="screen_PRE_COUNT" class="backplate hidden" src="03.gif">
+	<img id="screen_PLAY" class="backplate hidden" src="04.jpg">
+	<img id="screen_COUNTDOWN" class="backplate hidden" src="BG.jpg">
+	<img id="screen_FINAL" class="backplate hidden" src="05.jpg">
 
-		    const WS_PORT = 8001
-		    const url = "ws://" + window.location.hostname+":"+ WS_PORT+"/"
-
-		    let websocket = new WebSocket(url);
-		    websocket.binaryType = "arraybuffer";
-		    websocket.onopen = function(evt) { onOpen(evt) };
-		    websocket.onclose = function(evt) { onClose(evt) };
-		    websocket.onmessage = function(evt) { onMessage(evt) };
-		    websocket.onerror = function(evt) { onError(evt) };
-
-
-
-		    function writeToScreen(val){
-		    	console.log(val)
-		    }
-
-		    function onOpen(evt){
-		      writeToScreen("Client: connected");
-		      websocket.send("PARI chromium client connected")
-		    }
-
-		    function onClose(evt){
-		      if (evt.code == 1000){
-		        writeToScreen("Client: Disconnected");
-		      } else {
-		        writeToScreen("Client: Disconnected with error " + evt.code );
-		        writeToScreen(evt)
-		      }
-		    }
-
-		    function onMessage(evt){
-		      
-		      writeToScreen("MSG received")
-		      writeToScreen(evt.data)
-		      return
-		        try{
-		          var com =  JSON.parse(evt.data);
-		          // u.debug_json(com);
-		          // console.log(com)
-		          if (!Array.isArray(com)) {
-		            com = [com]
-		          }
-		          // payload.html("");
-		          com.forEach(handle_com);
-		          
-		          
-		        } catch (e) {
-		          if (e instanceof SyntaxError){
-		            console.log("received malformed response")
-		            console.log(evt.data)
-		            writeErrorToScreen("*** Received malformed response ***");
-		          } else {
-		            writeErrorToScreen("*** Error on local script. Check your browser's console for details and report the issue ***");
-		            console.error(e);
-		          }
-		        }
-		    	}
-		      
-		    function onError(evt){
-		      var msg = (evt.data)? evt.data : "<no data attached>";
-		      writeToScreen('Error: ' + msg);
-		      websocket.close();
-		      
-		    }
-
-
-		    // var jqxhr = $.ajax( "status" )
-		    //   .done(function() {
-		    //     console.log( "success" );
-		    //   })
-		    //   .fail(function() {
-		    //     console.log( "error" );
-		    //   })
-		    //   .always(function() {
-		    //     console.log( "complete" );
-		    //   });
-		});
-	</script>
+	<script type="text/javascript" src="main.js"></script>
 </body>
 </html>

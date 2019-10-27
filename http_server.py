@@ -20,9 +20,7 @@ class Request_Handler(http.server.SimpleHTTPRequestHandler):
 
         #STATIC SERVER
         http.server.SimpleHTTPRequestHandler.do_GET(self)
-        # print("STATIC_RESPONSE", http.server.SimpleHTTPRequestHandler.do_GET(self))
-
-
+        
 
     def handle_http(self, msg, status_code):
         self.send_response(status_code)
@@ -48,6 +46,7 @@ def start():
 
 def close():
     if http_server:
+        http_server.server_close()
         http_server.shutdown()
     if t.is_alive():
         t.join()

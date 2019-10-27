@@ -38,22 +38,23 @@ def main():
 
 	while 1:
 		ws_server.send(get_control_json("IDLE"))
-		time.sleep(1)
+		time.sleep(3)
 
 		ws_server.send(get_control_json("INSTRUCTIONS"))
-		time.sleep(1)
+		time.sleep(3)
 
-		ws_server.send(get_control_json("PRE-COUNT"))
-		time.sleep(1)
+		ws_server.send(get_control_json("PRE_COUNT"))
+		time.sleep(3)
 
 		ws_server.send(get_control_json("PLAY"))
-		time.sleep(1)
+		time.sleep(3)
 
-		ws_server.send(get_control_json("COUNTDOWN"))
-		time.sleep(1)
-
+		for i in range(10):
+			ws_server.send(get_control_json("COUNTDOWN", 10-i))
+			time.sleep(1)
+		
 		ws_server.send(get_control_json("FINAL"))
-		time.sleep(1)
+		time.sleep(3)
 	
 
 
