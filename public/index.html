@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+	<meta charset="utf-8" />
 	<title>Gioco dei riflessi</title>
 	<style type="text/css">
 		html, body, div, span, applet, object, iframe,
@@ -46,16 +47,82 @@
 		$( document ).ready(function() {
 		    console.log( "ready!" );
 
-		    var jqxhr = $.ajax( "status" )
-		      .done(function() {
-		        console.log( "success" );
-		      })
-		      .fail(function() {
-		        console.log( "error" );
-		      })
-		      .always(function() {
-		        console.log( "complete" );
-		      });
+		    const WS_PORT = 8001
+		    const url = "ws://" + window.location.hostname+":"+ WS_PORT+"/"
+
+		    let websocket = new WebSocket(url);
+		    websocket.binaryType = "arraybuffer";
+		    websocket.onopen = function(evt) { onOpen(evt) };
+		    websocket.onclose = function(evt) { onClose(evt) };
+		    websocket.onmessage = function(evt) { onMessage(evt) };
+		    websocket.onerror = function(evt) { onError(evt) };
+
+
+
+		    function writeToScreen(val){
+		    	console.log(val)
+		    }
+
+		    function onOpen(evt){
+		      writeToScreen("Client: connected");
+		      websocket.send("PARI chromium client connected")
+		    }
+
+		    function onClose(evt){
+		      if (evt.code == 1000){
+		        writeToScreen("Client: Disconnected");
+		      } else {
+		        writeToScreen("Client: Disconnected with error " + evt.code );
+		        writeToScreen(evt)
+		      }
+		    }
+
+		    function onMessage(evt){
+		      
+		      writeToScreen("MSG received")
+		      writeToScreen(evt.data)
+		      return
+		        try{
+		          var com =  JSON.parse(evt.data);
+		          // u.debug_json(com);
+		          // console.log(com)
+		          if (!Array.isArray(com)) {
+		            com = [com]
+		          }
+		          // payload.html("");
+		          com.forEach(handle_com);
+		          
+		          
+		        } catch (e) {
+		          if (e instanceof SyntaxError){
+		            console.log("received malformed response")
+		            console.log(evt.data)
+		            writeErrorToScreen("*** Received malformed response ***");
+		          } else {
+		            writeErrorToScreen("*** Error on local script. Check your browser's console for details and report the issue ***");
+		            console.error(e);
+		          }
+		        }
+		    	}
+		      
+		    function onError(evt){
+		      var msg = (evt.data)? evt.data : "<no data attached>";
+		      writeToScreen('Error: ' + msg);
+		      websocket.close();
+		      
+		    }
+
+
+		    // var jqxhr = $.ajax( "status" )
+		    //   .done(function() {
+		    //     console.log( "success" );
+		    //   })
+		    //   .fail(function() {
+		    //     console.log( "error" );
+		    //   })
+		    //   .always(function() {
+		    //     console.log( "complete" );
+		    //   });
 		});
 	</script>
 </body>

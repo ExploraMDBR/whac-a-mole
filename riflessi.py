@@ -134,7 +134,6 @@ if __name__ == '__main__':
 		t.start()
 		# -----------  Start  -----------
 		 
-		# with Riflessi_Game() as game:
 		game = Riflessi_Game()
 		for i,btn in enumerate(buttons):
 			btn.when_pressed = game.press_button 
