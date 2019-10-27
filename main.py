@@ -11,6 +11,7 @@ from sys import stdout
 import ws_server
 import http_server
 import riflessi
+import database_manager as db
 
 delays = {
 	"INSTRUCTIONS" : 5,
@@ -38,6 +39,23 @@ def countdown(counter):
 		time.sleep(1)
 		if counter < 1 : return
 
+def code_to_db(code):
+	try:
+		gender, age = code.split("2")
+	except ValueError as e:
+		return "Wrong code: Cannot split in 2 tokens";
+	
+	gen_convert = ["femmina", "maschio"]
+	gender = int(gender)
+	if gender > len(gen_convert): return "Wrong code: Not valid gender part"
+	gender = gen_convert[gender]
+	
+	age = "{:2d}".format(int(age))
+
+	db.insert_user(gender, age)
+	db.commit()
+	return False
+
 def main():
 	import argparse
 
@@ -53,6 +71,10 @@ def main():
 	http_server.start()
 	dump_to_console("PARI HTTP server started at port {}\non {}"\
 		.format(http_server.PORT, datetime.datetime.now()))
+
+	#Connect to DB
+	db.start()
+
 	
 	#HANDLE SIGTERM
 	def close_sig_handler(signal, frame):
@@ -70,6 +92,12 @@ def main():
 		with ws_server.__TEMP_condition:
 			while not ws_server.__TEMP_user_creation:
 				ws_server.__TEMP_condition.wait()
+
+		db_error = code_to_db(ws_server.__TEMP_user_creation)
+		if db_error:
+			dump_to_console(db_error)
+			continue
+
 
 		dump_to_console("your code is", ws_server.__TEMP_user_creation)
 		ws_server.__TEMP_user_creation = 0

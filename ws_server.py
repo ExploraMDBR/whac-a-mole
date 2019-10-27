@@ -35,7 +35,7 @@ class Pari_Websocket_Handler(WebSocket):
 
 	def handleMessage(self):
 		try:
-			is_new_user = re.match("NEW_USER ([0-9]{4})", self.data)
+			is_new_user = re.match("NEW_USER ([0-9]{5})", self.data)
 			if is_new_user:
 				create_user(is_new_user.group(1))
 				
