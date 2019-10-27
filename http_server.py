@@ -35,9 +35,8 @@ class Request_Handler(http.server.SimpleHTTPRequestHandler):
 http_server = None
 def serve_forever():
     global http_server
-    with socketserver.TCPServer(("", PORT), Request_Handler) as httpd:
-        http_server = httpd
-        httpd.serve_forever()
+    http_server = socketserver.TCPServer(("", PORT), Request_Handler)
+    http_server.serve_forever()
 
 t = threading.Thread(target = serve_forever)
 

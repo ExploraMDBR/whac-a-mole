@@ -3,8 +3,8 @@ import threading
 from os.path import join, realpath, dirname
 import random
 import sys, os, time
-from gpiozero import Button, LED, TonalBuzzer
-from gpiozero.tones import Tone
+from gpiozero import Button, LED
+# from gpiozero.tones import Tone
 
 
 # =====================================
@@ -22,7 +22,7 @@ _INTERNAL_SLEEP = 0.1
 # ===============================
 # =           GLOBALS           =
 # ===============================
-tonal_buzzer = TonalBuzzer(6)
+# tonal_buzzer = TonalBuzzer(6)
 
 buttons = [ Button(17), Button(27), Button(22), Button(23) ]
 # leds = { 17:LED(25), 23:LED(26), 27:LED(24), 22:LED(16) }
@@ -34,22 +34,23 @@ wrong = [ 220 * 18/8, 220 * 15/8, 220 ]
 # ======  End of GLOBALS  =======
 
 def error_sound():
-	tonal_buzzer.play(wrong[0])
-	time.sleep(GENERIC_DELAY/3)
-	tonal_buzzer.play(wrong[1])
-	time.sleep(GENERIC_DELAY/3)
-	tonal_buzzer.play(wrong[2])
-	time.sleep(GENERIC_DELAY/3)
-	tonal_buzzer.stop()
+	pass
+	# tonal_buzzer.play(wrong[0])
+	# time.sleep(GENERIC_DELAY/3)
+	# tonal_buzzer.play(wrong[1])
+	# time.sleep(GENERIC_DELAY/3)
+	# tonal_buzzer.play(wrong[2])
+	# time.sleep(GENERIC_DELAY/3)
+	# tonal_buzzer.stop()
 
 
 def light_led(number):
 	led = leds[number]
 	led.on()
-	tonal_buzzer.play(sounds[number])
+	# tonal_buzzer.play(sounds[number])
 	time.sleep(_INTERNAL_SLEEP)
 	led.off()
-	tonal_buzzer.stop()
+	# tonal_buzzer.stop()
 	time.sleep(_INTERNAL_SLEEP)
 
 
