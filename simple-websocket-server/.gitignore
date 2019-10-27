@@ -1,0 +1,7 @@
+*.pyc
+node_modules
+*.sublime-*
+__pycache__
+# !client/dist/*.png
+# !client/dist/*.jpg
+client/dist

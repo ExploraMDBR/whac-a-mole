@@ -2,6 +2,7 @@ import http.server
 import socketserver
 from urllib.parse import urlparse, parse_qs
 import json
+import threading
 
 PORT = 8080
 
@@ -15,18 +16,11 @@ class Request_Handler(http.server.SimpleHTTPRequestHandler):
             self.respond(json.dumps({"status": "running"}), 200)
             return
 
-        # is_command = self.cmd_lookup.match(self.parsed.path)
-
-        # if is_command:
-        #     self.notochord_command(is_command.group(1))
-        # elif self.path in self.redirs:
-        #     self.respond(get_comm_json(self.redirs[self.path]["msg"]),\
-        #                                  self.redirs[self.path]["status"])
-        # else:
         self.path = STATIC_DIR + self.path
 
-        print("STATIC_RESPONSE", http.server.SimpleHTTPRequestHandler.do_GET(self))
         #STATIC SERVER
+        http.server.SimpleHTTPRequestHandler.do_GET(self)
+        # print("STATIC_RESPONSE", http.server.SimpleHTTPRequestHandler.do_GET(self))
 
 
 
@@ -40,7 +34,20 @@ class Request_Handler(http.server.SimpleHTTPRequestHandler):
             response = self.handle_http(msg, code)
             self.wfile.write(response.encode('utf-8'))
 
+http_server = None
+def serve_forever():
+    global http_server
+    with socketserver.TCPServer(("", PORT), Request_Handler) as httpd:
+        http_server = httpd
+        httpd.serve_forever()
 
-with socketserver.TCPServer(("", PORT), Request_Handler) as httpd:
-    print("serving at port", PORT)
-    httpd.serve_forever()
+t = threading.Thread(target = serve_forever)
+
+def start():
+    t.start()
+
+def close():
+    if http_server:
+        http_server.shutdown()
+    if t.is_alive():
+        t.join()
