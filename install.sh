@@ -37,7 +37,12 @@ sed -e "s:%WORK_DIR%:$(pwd):g" pari_server.service | sudo tee /etc/systemd/syste
 sudo systemctl enable pari_server.service
 sudo service pari_server start
 
+#kiosk
+sed -e "s:%WORK_DIR%:$(pwd):g" kiosk.service | sudo tee /etc/systemd/system/kiosk.service 
+sudo systemctl enable kiosk.service
+
 #end
 echo installation finished
 echo "Database [pari] created, password = $SQL_PASS"
 echo "Be sure to copy it and paste it in 'database_manager.py'"
+echo "Upon restart the system will open Chromium in KIOSK mode"
