@@ -19,6 +19,8 @@ delays = {
 	"FINAL": 10
 }
 
+barcode_dev = '/dev/hidraw3'
+
 def dump_to_console(*args):
 	args = [str(a) for a in args]
 	print("[MAIN]", " ".join(args))
@@ -56,6 +58,10 @@ def code_to_db(code):
 	db.commit()
 	return False
 
+def code_input_to_number(input):
+	order = [1,2,3,4,5,6,7,8,9,0]
+	return order[input-30]
+
 def main():
 	import argparse
 
@@ -85,22 +91,42 @@ def main():
 
 	signal.signal(signal.SIGINT, close_sig_handler)
 
+	
+	for i in range(20):
+		ws_server.send(get_control_json("CONF"))
+		time.sleep(1)
+		stdout.flush()
+		
+	f = open(barcode_dev)
 	#PLAY LOOP
 
 	while 1:
 		ws_server.send(get_control_json("IDLE"))
-		with ws_server.__TEMP_condition:
-			while not ws_server.__TEMP_user_creation:
-				ws_server.__TEMP_condition.wait()
+		# with ws_server.__TEMP_condition:
+		# 	while not ws_server.__TEMP_user_creation:
+		# 		ws_server.__TEMP_condition.wait()
+		
 
-		db_error = code_to_db(ws_server.__TEMP_user_creation)
+
+
+		the_code = ""
+		while 1:
+			c = f.read(1)
+			if ord(c) == 40: break
+
+			if ord(c):
+				the_code += str(code_input_to_number(ord(c)))
+				stdout.flush()
+
+
+		db_error = code_to_db(the_code)
 		if db_error:
 			dump_to_console(db_error)
 			continue
 
 
-		dump_to_console("your code is", ws_server.__TEMP_user_creation)
-		ws_server.__TEMP_user_creation = 0
+		dump_to_console("your code is", the_code)
+		# ws_server.__TEMP_user_creation = 0
 
 		ws_server.send(get_control_json("INSTRUCTIONS"))
 		dump_to_console("INSTRUCTIONS screen, waiting ", delays["INSTRUCTIONS"], "seconds")
