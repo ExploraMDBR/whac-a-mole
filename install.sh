@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set eux
+set -eux
 
 function randpass()
 {
@@ -10,7 +10,7 @@ function randpass()
 
 sudo apt update
 
-sudo apt install -y mysql-server
+sudo apt install -y mariadb-server-10.0
 read -n1 -p "About to perform mysql conf. User supervision required. press a key to continue."
 sudo mysql_secure_installation
 
@@ -22,7 +22,7 @@ CREATE_SQL_USER="CREATE USER '$SQL_USER'@'localhost' IDENTIFIED BY '$SQL_PASS';"
 sudo mysql -e "$CREATE_SQL_USER"
 
 echo "creating DB"
-sudo mysql -e "CREATE DATABASE 	"
+sudo mysql -e "CREATE DATABASE pari"
 sudo mysql pari < paolo/pari.sql
 
 echo "grant admin user permissions"
@@ -37,12 +37,18 @@ sed -e "s:%WORK_DIR%:$(pwd):g" pari_server.service | sudo tee /etc/systemd/syste
 sudo systemctl enable pari_server.service
 sudo service pari_server start
 
+#Set the screen resolution to 1024x600
+cat /boot/config.txt | grep -v "^hdmi.*" | sudo tee /boot/config.txt
+cat monitor.txt | sudo tee /boot/config.txt
+
 #kiosk
-sed -e "s:%WORK_DIR%:$(pwd):g" kiosk.service | sudo tee /etc/systemd/system/kiosk.service 
-sudo systemctl enable kiosk.service
+sudo apt-get install unclutter
+mkdir -p ~/.config/lxsession/LXDE-pi
+cat kiosk.conf >  ~/.config/lxsession/LXDE-pi/autostart
 
 #end
 echo installation finished
 echo "Database [pari] created, password = $SQL_PASS"
 echo "Be sure to copy it and paste it in 'database_manager.py'"
 echo "Upon restart the system will open Chromium in KIOSK mode"
+
