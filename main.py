@@ -63,6 +63,14 @@ def code_input_to_number(input):
 	return order[input-30]
 
 def main():
+	for i in range(4):
+		print("waiting to finish conf...", 4-i)
+		stdout.flush()
+		ws_server.send(get_control_json("CONF"))
+		time.sleep(5)
+		
+	f = open(barcode_dev)
+
 	import argparse
 
 	parser = argparse.ArgumentParser(description='Explora\'s Gioco dei Riflessi controller' )
@@ -92,12 +100,6 @@ def main():
 	signal.signal(signal.SIGINT, close_sig_handler)
 
 	
-	for i in range(20):
-		ws_server.send(get_control_json("CONF"))
-		time.sleep(1)
-		stdout.flush()
-		
-	f = open(barcode_dev)
 	#PLAY LOOP
 
 	while 1:
@@ -106,9 +108,6 @@ def main():
 		# 	while not ws_server.__TEMP_user_creation:
 		# 		ws_server.__TEMP_condition.wait()
 		
-
-
-
 		the_code = ""
 		while 1:
 			c = f.read(1)
@@ -149,12 +148,12 @@ def main():
 		# -----------  PLAY  -----------
 		
 		t.join() #--- Block here ---
-		del(game)
-		
-		
+
 		# -----------  END  -----------
-		ws_server.send(get_control_json("FINAL"))
+		ws_server.send(get_control_json("FINAL", str(game.score)))
+		del(game)
 		dump_to_console("FINAL screen, waiting ", delays["FINAL"], "seconds")
+		
 		time.sleep(delays["FINAL"])
 
 		for i,btn in enumerate(riflessi.buttons):
