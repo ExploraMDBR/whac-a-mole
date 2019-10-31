@@ -19,7 +19,7 @@ delays = {
 	"FINAL": 10
 }
 
-barcode_dev = '/dev/hidraw3'
+barcode_dev = '/dev/hidraw0'
 
 def dump_to_console(*args):
 	args = [str(a) for a in args]

@@ -13,9 +13,9 @@ from gpiozero import Button, LED
 ROUND_DURATION = 30
 GENERIC_DELAY = 2
 DELAY_GAMEOVER = 5
-MAX_BUTTONS = 4
+MAX_BUTTONS = 6
 
-_INTERNAL_SLEEP = 0.1
+LED_ON_DURATION = 1
 # ======  End of CONFIGURATION  =======
 
 
@@ -24,9 +24,11 @@ _INTERNAL_SLEEP = 0.1
 # ===============================
 # tonal_buzzer = TonalBuzzer(6)
 
-buttons = [ Button(17), Button(27), Button(22), Button(23) ]
+buttons = [ Button(27), Button(9), Button(6),
+		Button(19), Button(24), Button(20) ]
 # leds = { 17:LED(25), 23:LED(26), 27:LED(24), 22:LED(16) }
-leds = [LED(25), LED(24), LED(16), LED(26)]
+leds = [ LED(17), LED(10), LED(5),
+		LED(13), LED(23), LED(16) ]
 
 sounds = [ 220,  220 * 10/8,  220 * 15/8, 220 * 18/8 ]
 wrong = [ 220 * 18/8, 220 * 15/8, 220 ]
@@ -48,10 +50,10 @@ def light_led(number):
 	led = leds[number]
 	led.on()
 	# tonal_buzzer.play(sounds[number])
-	time.sleep(_INTERNAL_SLEEP)
+	time.sleep(LED_ON_DURATION)
 	led.off()
 	# tonal_buzzer.stop()
-	time.sleep(_INTERNAL_SLEEP)
+
 
 
 def light_all(but = None):
@@ -62,12 +64,12 @@ def light_all(but = None):
 	for led in to_light:
 		led.on()
 
+	time.sleep(LED_ON_DURATION)
 	error_sound()	
 
 	for led in to_light:
 		led.off()
 
-	time.sleep(_INTERNAL_SLEEP)
 
 
 class Riflessi_Game:
@@ -89,11 +91,13 @@ class Riflessi_Game:
 		print("LAST BLINKED=", self.last_button)
 
 	def press_button(self, button):
+		print("**************")
+		number = buttons.index(button)
+		print("YOU PRESSED =", number)
+		
 		if not self.available: return
 		self.available = False
 
-		number = buttons.index(button)
-		print("YOU PRESSED =", number)
 		
 		if number == self.last_button:
 			light_led(number)
@@ -105,6 +109,7 @@ class Riflessi_Game:
 			light_all(number)
 			self.available = True
 			print("###### SCORE %s ######" % self.score)
+
 
 
 
@@ -134,8 +139,11 @@ if __name__ == '__main__':
 		t = threading.Thread(target=countdown, args=(args.time,))
 		t.start()
 		# -----------  Start  -----------
-		 
+		
 		game = Riflessi_Game()
+		def press_test_button(button):
+			print(button)
+
 		for i,btn in enumerate(buttons):
 			btn.when_pressed = game.press_button 
 		
