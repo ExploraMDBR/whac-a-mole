@@ -16,6 +16,7 @@ import database_manager as db
 delays = {
 	"INSTRUCTIONS" : 5,
 	"PRE_COUNT" : 3,
+	"PLAY": 2,
 	"FINAL": 10
 }
 
@@ -75,8 +76,10 @@ def main():
 		.format(http_server.PORT, datetime.datetime.now()))
 	
 	#GET BARCODE READER DEVICE
+	http_server.last_error = "Opening Barcode reader."
 	while 1:
 		try:
+			time.sleep(5)
 			f = open(barcode_dev)
 			http_server.last_error = None
 			dump_to_console("Barcode reader found at {}".format(barcode_dev))
@@ -84,7 +87,6 @@ def main():
 		except Exception as e:
 			http_server.last_error = "Can't open Barcode reader."
 			dump_to_console(http_server.last_error)
-			time.sleep(1)
 
 
 	#START WS SERVER
@@ -131,12 +133,16 @@ def main():
 		dump_to_console("Scanned code", the_code)
 
 		ws_server.send(get_control_json("INSTRUCTIONS"))
-		dump_to_console("INSTRUCTIONS screen, waiting ", delays["INSTRUCTIONS"], "seconds")
+		# dump_to_console("INSTRUCTIONS screen, waiting ", delays["INSTRUCTIONS"], "seconds")
 		time.sleep(delays["INSTRUCTIONS"])
 
 		ws_server.send(get_control_json("PRE_COUNT"))
-		dump_to_console("PRE_COUNT screen, waiting ", delays["PRE_COUNT"], "seconds")
+		# dump_to_console("PRE_COUNT screen, waiting ", delays["PRE_COUNT"], "seconds")
 		time.sleep(delays["PRE_COUNT"])
+
+		ws_server.send(get_control_json("PLAY"))
+		# dump_to_console("PLAY screen, waiting ", delays["PRE_COUNT"], "seconds")
+		time.sleep(delays["PLAY"])
 
 		t = threading.Thread(target=countdown, args=(args.time,))
 		t.start()
@@ -155,7 +161,7 @@ def main():
 		# -----------  END  -----------
 		ws_server.send(get_control_json("FINAL", str(game.score)))
 		del(game)
-		dump_to_console("FINAL screen, waiting ", delays["FINAL"], "seconds")
+		# dump_to_console("FINAL screen, waiting ", delays["FINAL"], "seconds")
 		
 		time.sleep(delays["FINAL"])
 
