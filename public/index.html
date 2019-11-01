@@ -26,6 +26,11 @@
 			overflow: hidden
 		}
 
+		@font-face {
+		  font-family: "tondu";
+		  src: url("tondu_beta.woff") format("woff");
+		}
+
 		img {
 			width: 100%
 		}
@@ -47,8 +52,16 @@
 		#over p{
 			width: 100%;
 			text-align: center;
-			font-size: 100px;
-			font-family: sans-serif;
+			font-size: 460px;
+			font-family: 'tondu';
+			color: white;
+		}
+
+		#over p.final{
+			color: #75a4ff;
+			font-size: 190px;
+			margin-top: 317px;
+			margin-left: -26px;
 		}
 
 		#transition {
@@ -76,7 +89,7 @@
 	<div id="screen_CONF" class="backplate"></div>
 	<img id="screen_IDLE" class="backplate" src="01.jpg">
 	<img id="screen_INSTRUCTIONS" class="backplate hidden" src="02.jpg">
-	<img id="screen_PRE_COUNT" class="backplate hidden" src="03.gif">
+	<img id="screen_PRE_COUNT" class="backplate hidden" src="BG_precount.jpg">
 	<img id="screen_PLAY" class="backplate hidden" src="04.jpg">
 	<img id="screen_COUNTDOWN" class="backplate hidden" src="BG.jpg">
 	<img id="screen_FINAL" class="backplate hidden" src="05.jpg">

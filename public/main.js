@@ -37,6 +37,13 @@ function show_screen(com){
 		} else {
 			writeToScreen(" *** Not valid state "+ com.state +" ***")
 		}
+
+    if (com.state == 'FINAL'){
+      $("#over p").addClass("final");      
+    } else {
+      $("#over p").removeClass("final");
+    }
+
 		$("#over p").text(com.count? com.count : "");
 	});
 

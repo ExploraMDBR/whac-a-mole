@@ -136,9 +136,9 @@ def main():
 		# dump_to_console("INSTRUCTIONS screen, waiting ", delays["INSTRUCTIONS"], "seconds")
 		time.sleep(delays["INSTRUCTIONS"])
 
-		ws_server.send(get_control_json("PRE_COUNT"))
-		# dump_to_console("PRE_COUNT screen, waiting ", delays["PRE_COUNT"], "seconds")
-		time.sleep(delays["PRE_COUNT"])
+		for i in range(delays["PRE_COUNT"]):
+			ws_server.send(get_control_json("PRE_COUNT", str(delays["PRE_COUNT"] - i)))
+			time.sleep(1)
 
 		ws_server.send(get_control_json("PLAY"))
 		# dump_to_console("PLAY screen, waiting ", delays["PRE_COUNT"], "seconds")
