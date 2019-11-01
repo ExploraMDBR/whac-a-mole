@@ -63,28 +63,35 @@ def code_input_to_number(input):
 	return order[input-30]
 
 def main():
-	for i in range(4):
-		print("waiting to finish conf...", 4-i)
-		stdout.flush()
-		ws_server.send(get_control_json("CONF"))
-		time.sleep(5)
-		
-	f = open(barcode_dev)
-
 	import argparse
 
 	parser = argparse.ArgumentParser(description='Explora\'s Gioco dei Riflessi controller' )
 	parser.add_argument('-t','--time',type=int, default=riflessi.ROUND_DURATION,  help='Seconds on each round')
 	args = parser.parse_args()
+	
+	#START HTTP SERVER	
+	http_server.start()
+	dump_to_console("PARI HTTP server started at port {}\non {}"\
+		.format(http_server.PORT, datetime.datetime.now()))
+	
+	#GET BARCODE READER DEVICE
+	while 1:
+		try:
+			f = open(barcode_dev)
+			http_server.last_error = None
+			dump_to_console("Barcode reader found at {}".format(barcode_dev))
+			break
+		except Exception as e:
+			http_server.last_error = "Can't open Barcode reader."
+			dump_to_console(http_server.last_error)
+			time.sleep(1)
 
-	#START SERVERS
+
+	#START WS SERVER
 	ws_server.start()
 	dump_to_console("PARI Websocket server started at port {}\non {}"\
 		.format(ws_server.WS_PORT, datetime.datetime.now()))
 
-	http_server.start()
-	dump_to_console("PARI HTTP server started at port {}\non {}"\
-		.format(http_server.PORT, datetime.datetime.now()))
 
 	#Connect to DB
 	db.start()
@@ -104,9 +111,6 @@ def main():
 
 	while 1:
 		ws_server.send(get_control_json("IDLE"))
-		# with ws_server.__TEMP_condition:
-		# 	while not ws_server.__TEMP_user_creation:
-		# 		ws_server.__TEMP_condition.wait()
 		
 		the_code = ""
 		while 1:
@@ -124,8 +128,7 @@ def main():
 			continue
 
 
-		dump_to_console("your code is", the_code)
-		# ws_server.__TEMP_user_creation = 0
+		dump_to_console("Scanned code", the_code)
 
 		ws_server.send(get_control_json("INSTRUCTIONS"))
 		dump_to_console("INSTRUCTIONS screen, waiting ", delays["INSTRUCTIONS"], "seconds")

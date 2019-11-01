@@ -1,5 +1,5 @@
 
-f = open('/dev/hidraw0')
+f = open('/dev/hidraw3')
 
 while 1:
     c = f.read(1)

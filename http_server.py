@@ -8,8 +8,28 @@ PORT = 8080
 
 STATIC_DIR = "public/"
 
+last_error = None
+error_page = '''<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="refresh" content="30">
+    <title>PARI error message</title>
+</head>
+<body>
+    <p>{}</p>
+    <p>Retriying in 5 seconds..</p>
+</body>
+</html>'''
+
 class Request_Handler(http.server.SimpleHTTPRequestHandler):
     def do_GET(self):
+        global last_error
+
+        if last_error:
+            self.error(last_error)
+            return
+
         self.parsed = urlparse(self.path)
 
         if self.path == "/status":
@@ -31,6 +51,13 @@ class Request_Handler(http.server.SimpleHTTPRequestHandler):
     def respond(self, msg, code = 418):
             response = self.handle_http(msg, code)
             self.wfile.write(response.encode('utf-8'))
+
+    def error(self, err):
+        self.send_response(500)
+        self.send_header('Content-type', 'text/html')
+        self.end_headers()
+        response = error_page.format(err)
+        self.wfile.write(response.encode('utf-8'))
 
 http_server = None
 def serve_forever():
