@@ -1,6 +1,6 @@
 import MySQLdb
 
-PASSWORD = "123456"
+PASSWORD = "riflessipari"
 
 db = None
 cur = None

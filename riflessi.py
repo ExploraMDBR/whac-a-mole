@@ -11,7 +11,7 @@ from gpiozero import Button, LED
 # =           CONFIGURATION           =
 # =====================================
 ROUND_DURATION = 30
-GENERIC_DELAY = 2
+NEXT_LED = 0.2
 DELAY_GAMEOVER = 5
 MAX_BUTTONS = 6
 
@@ -46,29 +46,28 @@ def error_sound():
 	# tonal_buzzer.stop()
 
 
-def light_led(number):
+def light_led(number, invert=False):
 	led = leds[number]
-	led.on()
+	if not invert:
+		led.on()
+	else:
+		led.off()
 	# tonal_buzzer.play(sounds[number])
-	time.sleep(LED_ON_DURATION)
-	led.off()
+
 	# tonal_buzzer.stop()
 
 
 
-def light_all(but = None):
+def light_all(but = None, invert=False):
 	to_light = leds[:]
 	if but:
 		to_light.pop(but)
 
 	for led in to_light:
-		led.on()
-
-	time.sleep(LED_ON_DURATION)
-	error_sound()	
-
-	for led in to_light:
-		led.off()
+		if not invert:
+			led.on()
+		else:
+			led.off()
 
 
 
@@ -78,9 +77,11 @@ class Riflessi_Game:
 		self.last_button = -1
 		self.available = False
 		self.score = 0
+		light_all(invert= True)
 		print('Game started')
 
 	def __del__(self):
+		light_all(invert= True)
 		print("Game OVER")
 
 	def light_button(self):
@@ -100,13 +101,13 @@ class Riflessi_Game:
 
 		
 		if number == self.last_button:
-			light_led(number)
+			light_all(invert= True)
 			self.score += 1
 			print("========= SCORE %s ========== (+1)! " % self.score)
-			time.sleep(GENERIC_DELAY)
+			time.sleep(NEXT_LED)
 			self.light_button()
 		else:
-			light_all(number)
+			# light_all(number)
 			self.available = True
 			print("###### SCORE %s ######" % self.score)
 
@@ -135,7 +136,7 @@ if __name__ == '__main__':
 	while 1:
 		a = input("(for now) Enter your code manually to start the game ")
 		print("your code is", a)
-		time.sleep(GENERIC_DELAY)
+		time.sleep(0.5)
 		t = threading.Thread(target=countdown, args=(args.time,))
 		t.start()
 		# -----------  Start  -----------

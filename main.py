@@ -22,6 +22,9 @@ delays = {
 
 barcode_dev = '/dev/hidraw0'
 
+DO_IDLE = True
+IDLE_SPEED = 0.3
+
 def dump_to_console(*args):
 	args = [str(a) for a in args]
 	print("[MAIN]", " ".join(args))
@@ -60,6 +63,8 @@ def code_to_db(code):
 	return False
 
 def code_input_to_number(input):
+	"""This function exists because the Barcode reader when readed from a headless
+	process sends the keystrokes as if the keyboard was with CAPSLOCK on"""
 	order = [1,2,3,4,5,6,7,8,9,0]
 	return order[input-30]
 
@@ -108,12 +113,37 @@ def main():
 
 	signal.signal(signal.SIGINT, close_sig_handler)
 
-	
-	#PLAY LOOP
+	#Led flashing
+	def flash_leds(times = 8):
+		for i in range(times):
+			riflessi.light_all()
+			time.sleep(0.2)
+			riflessi.light_all(invert = True)
+			time.sleep(0.2)
 
+	flash_leds()
+
+	#IDLE lights
+
+	def idle_lights():
+		global DO_IDLE
+		while DO_IDLE:
+			for i in range(riflessi.MAX_BUTTONS):
+				riflessi.light_led(i)
+				riflessi.light_led((i-1)%riflessi.MAX_BUTTONS, invert=True )
+				time.sleep(IDLE_SPEED)
+
+	# ======== PLAY LOOP ==============
 	while 1:
 		ws_server.send(get_control_json("IDLE"))
+
+		#start IDLE lights thread
+		global DO_IDLE
+		DO_IDLE = True
+		idle_thread = threading.Thread(target=idle_lights)
+		idle_thread.start()
 		
+		#wait for barcode
 		the_code = ""
 		while 1:
 			c = f.read(1)
@@ -123,30 +153,37 @@ def main():
 				the_code += str(code_input_to_number(ord(c)))
 				stdout.flush()
 
+		#stop idle lights
+		DO_IDLE = False
+		idle_thread.join()
 
+		#dump user to DB
 		db_error = code_to_db(the_code)
 		if db_error:
 			dump_to_console(db_error)
+			flash_leds()
 			continue
-
 
 		dump_to_console("Scanned code", the_code)
 
+		#Start screen + quick led blink
+		flash_leds(1)
 		ws_server.send(get_control_json("INSTRUCTIONS"))
-		# dump_to_console("INSTRUCTIONS screen, waiting ", delays["INSTRUCTIONS"], "seconds")
 		time.sleep(delays["INSTRUCTIONS"])
-
+		
+		#Pre-count screen
 		for i in range(delays["PRE_COUNT"]):
 			ws_server.send(get_control_json("PRE_COUNT", str(delays["PRE_COUNT"] - i)))
 			time.sleep(1)
 
+		#PLAY screen
 		ws_server.send(get_control_json("PLAY"))
-		# dump_to_console("PLAY screen, waiting ", delays["PRE_COUNT"], "seconds")
 		time.sleep(delays["PLAY"])
 
+		flash_leds(1)
+		# -----------  Start  Game -----------
 		t = threading.Thread(target=countdown, args=(args.time,))
 		t.start()
-		# -----------  Start  -----------
 		 
 		game = riflessi.Riflessi_Game()
 		for i,btn in enumerate(riflessi.buttons):
@@ -154,17 +191,19 @@ def main():
 		
 		game.light_button()
 
-		# -----------  PLAY  -----------
+		# -----------  PLAY Game  -----------
 		
-		t.join() #--- Block here ---
+		t.join() #--- Wait here until game ends ---
 
 		# -----------  END  -----------
 		ws_server.send(get_control_json("FINAL", str(game.score)))
 		del(game)
-		# dump_to_console("FINAL screen, waiting ", delays["FINAL"], "seconds")
+
+		flash_leds(3)
 		
 		time.sleep(delays["FINAL"])
 
+		#remove handlers from buttons
 		for i,btn in enumerate(riflessi.buttons):
 			btn.when_pressed = riflessi.no_button 
 
