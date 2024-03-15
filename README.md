@@ -1,4 +1,4 @@
-# Whac-a-mole
+# Riflessi---Whac-a-mole
 
 <img width="200" alt="project logo" src="images/logo.png">
 
