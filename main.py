@@ -7,9 +7,8 @@ import time
 import json
 import threading
 from sys import stdout
-
-import ws_server
-import http_server
+from legacy_display_server import ws_server
+from legacy_display_server import http_server
 import riflessi
 import database_manager as db
 
