@@ -2,7 +2,7 @@
 
 <img width="200" alt="project logo" src="images/logo.png">
 
-[![ExploraBadge](https://img.shields.io/badge/-Explora-eb5c2f)](https://mdbr.it/en/) [![Interactive](https://img.shields.io/badge/-Interactive_installation-55ca7c)](https://en.wikipedia.org/wiki/Web_application)
+[![ExploraBadge](https://img.shields.io/badge/-Explora-eb5c2f)](https://mdbr.it/en/) [![Interactive](https://img.shields.io/badge/-Interactive_installation-55ca7c)](https://en.wikipedia.org/wiki/Interactive_art)
 
 *Whac-a-mole* is a Python app that works like the classic **whac-a-mole game**, relying on a **led-button physical interface**.
 
@@ -21,11 +21,10 @@ The app **checks and saves how many buttons have been correctly pressed in a tim
 
 ### How it works
 1. User starts application making it read the barcode
-2. Instructions are displayed
-3. Countdown starts
-4. Led buttons randomically turns on and user press them
-5. Countdown reaches 0
-6. Game is over
+2. Countdown starts
+3. Led buttons randomically turns on and user press them
+4. Countdown reaches 0
+5. Game is over
 
 ![How it works](images/flow.png)
 
