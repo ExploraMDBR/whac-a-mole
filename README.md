@@ -30,7 +30,21 @@ The app **checks and saves how many buttons have been correctly pressed in a tim
 
 
 ## <a name="development"></a>Development
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
+### Dependencies:
+- [jQuery](https://github.com/jquery/jquery)
+- [legacy-display-server](https://github.com/ExploraMDBR/legacy-display-server)
+
+jQuery dependency already comes with the repository (in `./public` folder).
+
+```bash
+# Clone repo
+git clone https://github.com/ExploraMDBR/next-stop.git
+
+# Run the installation script. Be sure to have internet access  
+install.sh
+
+# The script will return a random generated password for the DB, copy it and paste it in "./database_manager.py"
+```
 
 
 ## <a name="infos"></a>Project additional infos
